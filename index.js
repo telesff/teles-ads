@@ -1,6 +1,6 @@
 const path = require("path");
 const express = require("express");
-const fetch = require("node-fetch"); // important
+const fetch = require("node-fetch");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -31,16 +31,20 @@ try {
   app.post("/api/telegram/webhook", async (req, res) => {
     const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || "";
     const TELEGRAM_API = `https://api.telegram.org/bot${BOT_TOKEN}`;
-    const MINI_APP_URL = process.env.MINI_APP_URL || `https://teles-ads-production.up.railway.app`;
-    const ADMIN_TELEGRAM_ID = parseInt(process.env.ADMIN_TELEGRAM_ID || "0");
+    const MINI_APP_URL =
+      process.env.MINI_APP_URL ||
+      "https://teles-ads-production.up.railway.app";
+    const ADMIN_TELEGRAM_ID = parseInt(
+      process.env.ADMIN_TELEGRAM_ID || "0"
+    );
 
     try {
       const update = req.body;
+      console.log("Webhook hit:", update);
+
       const text = update?.message?.text;
       const chatId = update?.message?.chat?.id;
       const userId = update?.message?.from?.id;
-
-      console.log("Webhook hit:", update);
 
       if (chatId && text === "/start") {
         await fetch(`${TELEGRAM_API}/sendMessage`, {
@@ -48,12 +52,23 @@ try {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             chat_id: chatId,
-            text: "🚀 <b>Welcome to TELES ADS</b>\n\nThe growth engine for Forex, Crypto, and Binary trading communities.\n\nChoose an option below to continue.",
+            text:
+              "🚀 <b>Welcome to TELES ADS</b>\n\nThe growth engine for Forex, Crypto, and Binary trading communities.\n\nChoose an option below to continue.",
             parse_mode: "HTML",
             reply_markup: {
               inline_keyboard: [
-                [{ text: "🌐 Visit Agency", url: "https://t.me/telesads" }],
-                [{ text: "🚀 Open Platform", web_app: { url: MINI_APP_URL } }]
+                [
+                  {
+                    text: "🌐 Visit Agency",
+                    url: "https://t.me/TelesAds",
+                  },
+                ],
+                [
+                  {
+                    text: "🚀 Open Platform",
+                    web_app: { url: MINI_APP_URL },
+                  },
+                ],
               ],
             },
           }),
@@ -70,7 +85,12 @@ try {
             parse_mode: "HTML",
             reply_markup: {
               inline_keyboard: [
-                [{ text: "📊 Dashboard", web_app: { url: `${MINI_APP_URL}/admin` } }],
+                [
+                  {
+                    text: "📊 Dashboard",
+                    web_app: { url: `${MINI_APP_URL}/admin` },
+                  },
+                ],
               ],
             },
           }),
